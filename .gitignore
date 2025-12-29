@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Images/Outputs
+*_output.png
+test_input.png
+cache/
+
+# IDEs
+.vscode/
+.idea/
