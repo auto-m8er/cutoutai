@@ -256,6 +256,7 @@ async def webhook_handler(
     edge_radius: int = Form(2),
     threshold: Optional[float] = Form(None),
     soft_threshold: bool = Form(False),
+    return_mask: bool = Form(False),
     callback_url: Optional[str] = Form(None)
 ):
     """
@@ -284,6 +285,7 @@ async def webhook_handler(
                 edge_radius = body.get("edge_radius", edge_radius)
                 threshold = body.get("threshold", threshold)
                 soft_threshold = body.get("soft_threshold", soft_threshold)
+                return_mask = body.get("return_mask", return_mask)
                 callback_url = body.get("callback_url", callback_url)
             except Exception as e:
                 logger.warning(f"Failed to parse JSON body: {e}")
