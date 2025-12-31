@@ -12,6 +12,7 @@ import io
 import base64
 import time
 import logging
+import httpx
 from typing import Optional, Literal, Union
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -307,12 +308,13 @@ async def webhook_handler(
                 # Handle potential header in base64
                 if "," in image_base64:
                     image_base64 = image_base64.split(",")[1]
+                # Clean whitespace
+                image_base64 = "".join(image_base64.split())
                 img_data = base64.b64decode(image_base64)
                 logger.info("Using base64 image data")
             except Exception as e:
                 return JSONResponse({"success": False, "error": f"Invalid base64 data: {e}"}, status_code=400)
         elif image_url:
-            import httpx
             logger.info(f"Fetching image from URL: {image_url}")
             async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
                 try:
@@ -341,21 +343,31 @@ async def webhook_handler(
             edge_radius=edge_radius,
             threshold=threshold,
             soft_threshold=soft_threshold,
+            return_mask=return_mask,
             output_format="base64"
         )
 
         processing_time = time.time() - start_time
 
-        response_data = {
-            "success": True,
-            "image_base64": result,
-            "model_used": model,
-            "processing_time_seconds": round(processing_time, 2)
-        }
+        if isinstance(result, dict):
+            response_data = {
+                "success": True,
+                "image_base64": result["result"],
+                "mask_base64": result["mask"],
+                "model_used": model,
+                "threshold_used": round(result.get("threshold_used", 0), 4),
+                "processing_time_seconds": round(processing_time, 2)
+            }
+        else:
+            response_data = {
+                "success": True,
+                "image_base64": result,
+                "model_used": model,
+                "processing_time_seconds": round(processing_time, 2)
+            }
 
         # If callback URL provided, send result there too
         if callback_url:
-            import httpx
             logger.info(f"Sending callback to: {callback_url}")
             async with httpx.AsyncClient(timeout=10.0) as client:
                 try:

@@ -55,6 +55,18 @@
 
 ---
 
+## Claude Code Quick Start
+
+```powershell
+# Start Claude Code with CCR (Gemini backend)
+$env:Path = "C:\Users\jonat_cau4\AppData\Local\nvm\v22.21.1;C:\Users\jonat_cau4\AppData\Roaming\npm;" + $env:Path
+$env:CLAUDE_BASE_URL = "http://127.0.0.1:3456"
+cd "C:\Users\jonat_cau4\.gemini\antigravity\scratch\background removal tool"
+claude
+```
+
+---
+
 ## Related Projects
 
 | Project | Relationship |
